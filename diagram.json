@@ -87,8 +87,8 @@
     [ "pico:GND.8", "bb2:3t.c", "", [ "$bb" ] ],
     [ "pico:VSYS", "bb2:2t.c", "", [ "$bb" ] ],
     [ "pico:VBUS", "bb2:1t.c", "", [ "$bb" ] ],
-    [ "bb2:3t.a", "bb2:tn.1", "green", [ "h0" ] ],
-    [ "bb2:5t.a", "bb2:tp.3", "green", [ "h0" ] ],
+    [ "bb2:3t.a", "bb2:tn.1", "black", [ "h0" ] ],
+    [ "bb2:5t.a", "bb2:tp.3", "red", [ "h0" ] ],
     [ "board-ssd1306-0:GND", "bb2:28b.h", "", [ "$bb" ] ],
     [ "board-ssd1306-0:VCC", "bb2:27b.h", "", [ "$bb" ] ],
     [ "board-ssd1306-0:SCL", "bb2:26b.h", "", [ "$bb" ] ],
@@ -101,7 +101,11 @@
     [ "wokwi-neopixel-0:DIN", "bb2:39b.f", "", [ "$bb" ] ],
     [ "wokwi-pir-motion-sensor-0:VCC", "bb2:45b.h", "", [ "$bb" ] ],
     [ "wokwi-pir-motion-sensor-0:OUT", "bb2:46b.h", "", [ "$bb" ] ],
-    [ "wokwi-pir-motion-sensor-0:GND", "bb2:47b.h", "", [ "$bb" ] ]
+    [ "wokwi-pir-motion-sensor-0:GND", "bb2:47b.h", "", [ "$bb" ] ],
+    [ "bb2:6b.j", "bb2:25b.j", "gold", [ "h-19.2", "v182.4" ] ],
+    [ "bb2:7b.j", "bb2:26b.j", "gray", [ "h-9.6", "v182.4" ] ],
+    [ "bb2:27b.j", "bb2:bp.21", "red", [ "h0" ] ],
+    [ "bb2:28b.j", "bb2:bn.22", "black", [ "h0" ] ]
   ],
   "dependencies": {}
 }
