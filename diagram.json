@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "The Bin - Hack Club",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": -3.9,
+      "left": -169.5,
+      "rotate": 90,
+      "attrs": {}
+    },
+    { "type": "board-pi-pico-w", "id": "pico", "top": -51.25, "left": -44.45, "attrs": {} },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "wokwi-pir-motion-sensor-0",
+      "top": 184.12,
+      "left": 48.5,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "board-ssd1306-0",
+      "top": 183.03,
+      "left": -146.14,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "wokwi-buzzer-0",
+      "top": 160.5,
+      "left": 52.5,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-neopixel",
+      "id": "wokwi-neopixel-0",
+      "top": 159.7,
+      "left": 18.2,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "pico:GP0", "$serialMonitor:RX", "", [] ],
+    [ "pico:GP1", "$serialMonitor:TX", "", [] ],
+    [ "board-ssd1306-0:GND", "bb1:27b.j", "", [ "$bb" ] ],
+    [ "board-ssd1306-0:VCC", "bb1:28b.j", "", [ "$bb" ] ],
+    [ "board-ssd1306-0:SCL", "bb1:29b.j", "", [ "$bb" ] ],
+    [ "board-ssd1306-0:SDA", "bb1:30b.j", "", [ "$bb" ] ],
+    [ "bb1:3t.a", "bb1:tn.2", "black", [ "h0" ] ],
+    [ "bb1:5t.a", "bb1:tp.4", "red", [ "h0" ] ],
+    [ "wokwi-buzzer-0:1", "bb1:25t.a", "", [ "$bb" ] ],
+    [ "wokwi-buzzer-0:2", "bb1:26t.a", "", [ "$bb" ] ],
+    [ "wokwi-neopixel-0:VDD", "bb1:22t.d", "", [ "$bb" ] ],
+    [ "wokwi-neopixel-0:DOUT", "bb1:23t.d", "", [ "$bb" ] ],
+    [ "wokwi-neopixel-0:VSS", "bb1:23t.b", "", [ "$bb" ] ],
+    [ "wokwi-neopixel-0:DIN", "bb1:22t.b", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
