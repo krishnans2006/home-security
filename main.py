@@ -1,4 +1,7 @@
-from machine import Pin, SoftI2C
+import socket
+import struct
+
+from machine import Pin, SoftI2C, RTC
 import network
 import time
 
@@ -7,6 +10,10 @@ import ssd1306
 
 WIFI_SSID = "Wokwi-GUEST"
 WIFI_PASS = ""
+
+NTP_HOST = "pool.ntp.org"
+NTP_DELTA = 2208988800 - (3600 * -4)  # UTC-4
+NTP_CORRECTION = 12
 
 OLED_WIDTH = 128
 OLED_HEIGHT = 64
@@ -31,16 +38,47 @@ def connect_wifi():
     print(f"Done! @ {wlan.ifconfig()[0]}")
 
 
+def sync_time():
+    print(f"Starting NTP sync with initial time {time.localtime()}")
+
+    ntp_query = bytearray(48)
+    ntp_query[0] = 0x1B
+
+    addr = socket.getaddrinfo(NTP_HOST, 123)[0][-1]
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        s.settimeout(1)
+        s.sendto(ntp_query, addr)
+        msg = s.recv(48)
+    except OSError as e:
+        if e.args[0] == 110:  # ETIMEDOUT
+            print("NTP request timed out")
+            return
+    finally:
+        s.close()
+
+    val = struct.unpack("!I", msg[40:44])[0]
+    t = val - NTP_DELTA - NTP_CORRECTION
+    tm = time.gmtime(t)
+    RTC().datetime((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
+
+    print(f"Time synced to {time.localtime()}")
+
+
 def main():
     connect_wifi()
+    sync_time()
+
     oled.text("Hello, World!", 0, 0)
     oled.text("Hello, World!", 0, 10)
     oled.text("Hello, World!", 0, 20)
     oled.text("Hello, World!", 0, 30)
     oled.show()
 
-    time.sleep(2)
-
 
 if __name__ == "__main__":
     main()
+
+    time.sleep(2)
