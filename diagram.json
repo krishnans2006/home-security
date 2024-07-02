@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "The Bin - Hack Club",
+  "author": "Krishnan Shankar",
   "editor": "wokwi",
   "parts": [
     {
@@ -11,7 +11,13 @@
       "rotate": 90,
       "attrs": {}
     },
-    { "type": "board-pi-pico-w", "id": "pico", "top": -185.65, "left": 32.35, "attrs": {} },
+    {
+      "type": "board-pi-pico-w",
+      "id": "pico",
+      "top": -185.65,
+      "left": 32.35,
+      "attrs": { "cyw43": "1" }
+    },
     {
       "type": "wokwi-pir-motion-sensor",
       "id": "wokwi-pir-motion-sensor-0",
@@ -45,8 +51,6 @@
     }
   ],
   "connections": [
-    [ "pico:GP0", "$serialMonitor:RX", "", [] ],
-    [ "pico:GP1", "$serialMonitor:TX", "", [] ],
     [ "pico:GP0", "bb2:1b.h", "", [ "$bb" ] ],
     [ "pico:GP1", "bb2:2b.h", "", [ "$bb" ] ],
     [ "pico:GND.1", "bb2:3b.h", "", [ "$bb" ] ],
@@ -109,5 +113,6 @@
     [ "bb2:bp.50", "bb2:tp.50", "red", [ "h0.9", "v37.6", "h172.8" ] ],
     [ "bb2:bn.50", "bb2:tn.50", "black", [ "h1.3", "v47.2", "h172.8" ] ]
   ],
+  "serialMonitor": { "display": "terminal" },
   "dependencies": {}
 }
