@@ -67,18 +67,22 @@ def sync_time():
     print(f"Time synced to {time.localtime()}")
 
 
+def get_datetime():
+    t = RTC().datetime()
+    return f"{t[0]}-{t[1]:02d}-{t[2]:02d} {t[4]:02d}:{t[5]:02d}:{t[6]:02d}"
+
+
 def main():
     connect_wifi()
     sync_time()
 
-    oled.text("Hello, World!", 0, 0)
-    oled.text("Hello, World!", 0, 10)
-    oled.text("Hello, World!", 0, 20)
-    oled.text("Hello, World!", 0, 30)
+    date, time = get_datetime().split()
+
+    oled.text(date, 0, 0)
+    oled.text(time, 0, 10)
     oled.show()
 
 
 if __name__ == "__main__":
     main()
-
     time.sleep(2)
