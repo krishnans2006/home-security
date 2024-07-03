@@ -1,7 +1,7 @@
 import socket
 import struct
 
-from machine import Pin, SoftI2C, RTC
+from machine import Pin, SoftI2C, RTC, PWM
 import network
 import time
 
@@ -23,6 +23,7 @@ wlan = network.WLAN(network.STA_IF)
 
 oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, SoftI2C(scl=Pin(5), sda=Pin(4)), addr=0x3c)
 pir = Pin(6, Pin.IN)
+beeper = PWM(Pin(7))
 
 last_motion_detected = None
 
@@ -74,6 +75,14 @@ def get_datetime():
     return f"{t[0]}-{t[1]:02d}-{t[2]:02d} {t[4]:02d}:{t[5]:02d}:{t[6]:02d}"
 
 
+def setup():
+    connect_wifi()
+    sync_time()
+
+    beeper.freq(440)
+    beeper.duty_ns(0)
+
+
 def loop():
     date_now, time_now = get_datetime().split()
 
@@ -81,8 +90,10 @@ def loop():
     if motion:
         global last_motion_detected
         last_motion_detected = time.time()
+        beeper.duty_ns(512)
         print("!", end="")
     else:
+        beeper.duty_ns(0)
         print(".", end="")
 
     oled.fill(0)
@@ -92,8 +103,7 @@ def loop():
 
 
 def main():
-    connect_wifi()
-    sync_time()
+    setup()
 
     while True:
         loop()
