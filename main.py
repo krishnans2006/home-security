@@ -25,8 +25,11 @@ oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, SoftI2C(scl=Pin(5), sda=Pin(
 pir = Pin(6, Pin.IN)
 beeper = PWM(Pin(7))
 
-is_motion_now = False
-last_motion_detected = None
+state = {
+    "is_motion_now": False,
+    "last_motion_detected": time.time(),
+    "motion_since_start": False,
+}
 
 
 def connect_wifi():
@@ -77,16 +80,14 @@ def get_datetime():
 
 
 def on_motion(_):
-    global is_motion_now, last_motion_detected
-    is_motion_now = True
-    last_motion_detected = time.time()
+    state["is_motion_now"] = True
+    state["last_motion_detected"] = time.time()
+    state["motion_since_start"] = True
     beeper.duty_ns(512)
 
 
 def on_no_motion(_):
-    global is_motion_now, last_motion_detected
-    is_motion_now = False
-    last_motion_detected = None
+    state["is_motion_now"] = False
     beeper.duty_ns(0)
 
 
@@ -96,6 +97,7 @@ def setup():
 
     beeper.freq(440)
     beeper.duty_ns(0)
+
     pir.irq(trigger=Pin.IRQ_RISING, handler=on_motion)
     pir.irq(trigger=Pin.IRQ_FALLING, handler=on_no_motion)
 
