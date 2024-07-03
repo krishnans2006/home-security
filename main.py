@@ -81,7 +81,9 @@ def loop():
     if motion:
         global last_motion_detected
         last_motion_detected = time.time()
-        print("Motion detected!")
+        print("!", end="")
+    else:
+        print(".", end="")
 
     oled.fill(0)
     oled.text(date_now, 0, 0)
