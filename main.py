@@ -97,10 +97,18 @@ def on_motion(_):
     state["is_motion_now"] = True
     state["motion_since_start"] = True
 
+    beeper.duty_ns(512)
+    pixel.fill((255, 0, 0))
+    pixel.show()
+
 
 def on_no_motion(_):
     state["is_motion_now"] = False
     state["last_motion_detected"] = time.time()
+
+    beeper.duty_ns(0)
+    pixel.fill((0, 0, 0))
+    pixel.show()
 
 
 def setup():
@@ -135,9 +143,8 @@ def loop():
         oled.text("Motion detected", 0, 30)
 
         if clock_tick:
-            beeper.duty_ns(512)
-            pixel.fill((255, 0, 0))
-            pixel.show()
+            beeper_freq = beeper.freq()
+            beeper.freq(440 if beeper_freq == 330 else 330)
     elif not state["motion_since_start"]:
         oled.text(f"No motion since boot @", 0, 30)
         oled.text(f"{time.time() - state['last_motion_detected']:.1f}s ago", 0, 40)
@@ -145,10 +152,6 @@ def loop():
         oled.text("No motion", 0, 30)
         oled.text(f"Last motion:", 0, 40)
         oled.text(f"{time.time() - state['last_motion_detected']:.1f}s ago", 0, 50)
-
-        beeper.duty_ns(0)
-        pixel.fill((0, 0, 0))
-        pixel.show()
 
     oled.show()
 
