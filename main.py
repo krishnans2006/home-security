@@ -81,6 +81,13 @@ def get_datetime():
     return f"{t[0]}-{t[1]:02d}-{t[2]:02d} {t[4]:02d}:{t[5]:02d}:{t[6]:02d}"
 
 
+def on_motion_change(_):
+    if pir.value() == 1:
+        on_motion(_)
+    else:
+        on_no_motion(_)
+
+
 def on_motion(_):
     state["is_motion_now"] = True
     state["last_motion_detected"] = time.time()
@@ -108,8 +115,7 @@ def setup():
     beeper.freq(440)
     beeper.duty_ns(0)
 
-    pir.irq(trigger=Pin.IRQ_RISING, handler=on_motion)
-    pir.irq(trigger=Pin.IRQ_FALLING, handler=on_no_motion)
+    pir.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=on_motion_change)
 
     pixel.fill((0, 0, 0))
     pixel.show()
