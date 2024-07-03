@@ -21,8 +21,10 @@ OLED_HEIGHT = 64
 
 wlan = network.WLAN(network.STA_IF)
 
-i2c = SoftI2C(scl=Pin(5), sda=Pin(4))
-oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, i2c, addr=0x3c)
+oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, SoftI2C(scl=Pin(5), sda=Pin(4)), addr=0x3c)
+pir = Pin(6, Pin.IN)
+
+last_motion_detected = None
 
 
 def connect_wifi():
@@ -73,11 +75,17 @@ def get_datetime():
 
 
 def loop():
-    date, time = get_datetime().split()
+    date_now, time_now = get_datetime().split()
+
+    motion = bool(pir.value())
+    if motion:
+        global last_motion_detected
+        last_motion_detected = time.time()
+        print("Motion detected!")
 
     oled.fill(0)
-    oled.text(date, 0, 0)
-    oled.text(time, 0, 10)
+    oled.text(date_now, 0, 0)
+    oled.text(time_now, 0, 10)
     oled.show()
 
 
@@ -87,7 +95,7 @@ def main():
 
     while True:
         loop()
-        time.sleep(1)
+        time.sleep(0.1)
 
 
 if __name__ == "__main__":
