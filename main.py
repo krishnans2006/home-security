@@ -6,6 +6,7 @@ import network
 import time
 
 import ssd1306
+import neopixel
 
 
 WIFI_SSID = "Wokwi-GUEST"
@@ -24,6 +25,7 @@ wlan = network.WLAN(network.STA_IF)
 oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, SoftI2C(scl=Pin(5), sda=Pin(4)), addr=0x3c)
 pir = Pin(6, Pin.IN)
 beeper = PWM(Pin(7))
+pixel = neopixel.Neopixel(1, 0, 8, "RGB")
 
 state = {
     "is_motion_now": False,
@@ -83,12 +85,20 @@ def on_motion(_):
     state["is_motion_now"] = True
     state["last_motion_detected"] = time.time()
     state["motion_since_start"] = True
+
     beeper.duty_ns(512)
+
+    pixel.fill((255, 0, 0))
+    pixel.show()
 
 
 def on_no_motion(_):
     state["is_motion_now"] = False
+
     beeper.duty_ns(0)
+
+    pixel.fill((0, 0, 0))
+    pixel.show()
 
 
 def setup():
@@ -100,6 +110,9 @@ def setup():
 
     pir.irq(trigger=Pin.IRQ_RISING, handler=on_motion)
     pir.irq(trigger=Pin.IRQ_FALLING, handler=on_no_motion)
+
+    pixel.fill((0, 0, 0))
+    pixel.show()
 
 
 def loop():
