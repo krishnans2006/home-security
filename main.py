@@ -19,6 +19,10 @@ NTP_CORRECTION = 12
 OLED_WIDTH = 128
 OLED_HEIGHT = 64
 
+LOOP_TICK_SEC = 0.1
+CLOCK_TICK_SEC = 0.5
+
+tick = CLOCK_TICK_SEC / LOOP_TICK_SEC
 
 wlan = network.WLAN(network.STA_IF)
 
@@ -31,6 +35,7 @@ state = {
     "is_motion_now": False,
     "last_motion_detected": time.time(),
     "motion_since_start": False,
+    "clock": 0,
 }
 
 
@@ -92,20 +97,10 @@ def on_motion(_):
     state["is_motion_now"] = True
     state["motion_since_start"] = True
 
-    beeper.duty_ns(512)
-
-    pixel.fill((255, 0, 0))
-    pixel.show()
-
 
 def on_no_motion(_):
     state["is_motion_now"] = False
     state["last_motion_detected"] = time.time()
-
-    beeper.duty_ns(0)
-
-    pixel.fill((0, 0, 0))
-    pixel.show()
 
 
 def setup():
@@ -122,6 +117,14 @@ def setup():
 
 
 def loop():
+    # The clock tick is used for timed actions (buzzer/pixel sequences)
+    state["clock"] += 1
+    if state["clock"] >= tick:
+        state["clock"] = 0
+        clock_tick = True
+    else:
+        clock_tick = False
+
     date_now, time_now = get_datetime().split()
 
     oled.fill(0)
@@ -130,6 +133,11 @@ def loop():
 
     if state["is_motion_now"]:
         oled.text("Motion detected", 0, 30)
+
+        if clock_tick:
+            beeper.duty_ns(512)
+            pixel.fill((255, 0, 0))
+            pixel.show()
     elif not state["motion_since_start"]:
         oled.text(f"No motion since boot @", 0, 30)
         oled.text(f"{time.time() - state['last_motion_detected']:.1f}s ago", 0, 40)
@@ -137,6 +145,10 @@ def loop():
         oled.text("No motion", 0, 30)
         oled.text(f"Last motion:", 0, 40)
         oled.text(f"{time.time() - state['last_motion_detected']:.1f}s ago", 0, 50)
+
+        beeper.duty_ns(0)
+        pixel.fill((0, 0, 0))
+        pixel.show()
 
     oled.show()
 
