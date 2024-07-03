@@ -72,15 +72,22 @@ def get_datetime():
     return f"{t[0]}-{t[1]:02d}-{t[2]:02d} {t[4]:02d}:{t[5]:02d}:{t[6]:02d}"
 
 
+def loop():
+    date, time = get_datetime().split()
+
+    oled.fill(0)
+    oled.text(date, 0, 0)
+    oled.text(time, 0, 10)
+    oled.show()
+
+
 def main():
     connect_wifi()
     sync_time()
 
-    date, time = get_datetime().split()
-
-    oled.text(date, 0, 0)
-    oled.text(time, 0, 10)
-    oled.show()
+    while True:
+        loop()
+        time.sleep(1)
 
 
 if __name__ == "__main__":
