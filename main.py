@@ -27,8 +27,8 @@ tick = CLOCK_TICK_SEC / LOOP_TICK_SEC
 wlan = network.WLAN(network.STA_IF)
 
 oled = ssd1306.SSD1306_I2C(OLED_WIDTH, OLED_HEIGHT, SoftI2C(scl=Pin(5), sda=Pin(4)), addr=0x3c)
-pir = Pin(6, Pin.IN)
-beeper = Pin(7)
+pir = Pin(6, Pin.IN, Pin.PULL_DOWN)
+beeper = PWM(Pin(7))
 pixel = neopixel.Neopixel(1, 0, 8, "RGB")
 
 state = {
@@ -97,7 +97,7 @@ def on_motion(_):
     state["is_motion_now"] = True
     state["motion_since_start"] = True
 
-    beeper.on()
+    beeper.duty_ns(512)
     pixel.fill((255, 0, 0))
     pixel.show()
 
@@ -106,7 +106,7 @@ def on_no_motion(_):
     state["is_motion_now"] = False
     state["last_motion_detected"] = time.time()
 
-    beeper.off()
+    beeper.duty_ns(0)
     pixel.fill((0, 0, 0))
     pixel.show()
 
@@ -115,7 +115,8 @@ def setup():
     connect_wifi()
     sync_time()
 
-    beeper.off()
+    beeper.freq(440)
+    beeper.duty_ns(0)
 
     pir.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=on_motion_change)
 
@@ -142,7 +143,8 @@ def loop():
         oled.text("Motion detected", 0, 30)
 
         if clock_tick:
-            pass
+            beeper_freq = beeper.freq()
+            beeper.freq(440 if beeper_freq == 330 else 330)
     elif not state["motion_since_start"]:
         oled.text(f"No motion since boot @", 0, 30)
         oled.text(f"{time.time() - state['last_motion_detected']:.1f}s ago", 0, 40)
